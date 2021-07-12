@@ -42,12 +42,6 @@ class Game:
         - from/to flask's last layers are eq
     '''
 
-    def __pour_from_to(self, coordinates: tuple):
-
-        temp = self.flasks[coordinates[1]][coordinates[3]]
-        self.flasks[coordinates[1]][coordinates[3]] = self.flasks[coordinates[0]][coordinates[2]]
-        self.flasks[coordinates[0]][coordinates[2]] = temp
-
     @staticmethod
     def get_color(i: int):
         table = [
@@ -76,15 +70,15 @@ class Game:
     Method returns List of from/to indexes of possible moves
     '''
 
-    def possible_moves(self):
+    def get_all_possible_moves(self) -> List[tuple]:
         moves = []
         seq = range(self.__n)
         product = itertools.combinations(seq, r=2)
         for i in product:
-            moves.append(self.__is_possible(i[0], i[1]))
+            moves.append(self.__get_possible(i[0], i[1]))
         return [item for sublist in moves for item in sublist]
 
-    def __is_possible(self, ind1: int, ind2: int):
+    def __get_possible(self, ind1: int, ind2: int) -> List[tuple]:
         operations = []
         is_empty1 = self.flasks[ind1].is_empty()
         is_empty2 = self.flasks[ind2].is_empty()
@@ -106,5 +100,6 @@ class Game:
             operations.append((ind2, ind1, index2, index1 + 1))
         return operations
 
-    def apply_move(self, coordinates: tuple):
-        self.__pour_from_to(coordinates)
+    def apply_move(self, coordinates: tuple) -> None:
+        self.flasks[coordinates[0]].pour_to(self.flasks[coordinates[1]], self_last_index=coordinates[2],
+                                            to_flask_last_index=coordinates[3])
